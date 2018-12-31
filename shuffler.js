@@ -51,3 +51,13 @@ function shuffleAllWords(text) {
 
 	return text
 }
+
+// The main body of the extension
+Array.prototype.forEach.call(
+	document.querySelectorAll('p,h1,h2,h3,h4,h5,h6,a,label,span,div'), element => {
+		if (element.childElementCount == 0) {
+			// console.log(shuffleAllWords(element.textContent))
+			element.textContent = shuffleAllWords(element.textContent)
+		}
+	}
+)

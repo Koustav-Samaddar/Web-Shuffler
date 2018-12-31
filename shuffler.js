@@ -10,3 +10,44 @@ function shuffle(a) {
     }
     return a;
 }
+
+/**
+ * Returns a copy of `text` but with all the words' mid-section shuffled
+ * @param {string} text - a string containing text to be "shuffled"
+ * @returns {string}
+ */
+function shuffleAllWords(text) {
+	for (let i = 0; i < text.length; ++i) {
+		// Get to the start of a word
+		while (i < text.length && text.charAt(i).match(/\W/)) {
+			++i
+		}
+	
+		if (i == text.length) {
+			break
+		}
+	
+		// At start of word, now find end
+		let j = i + 1
+		while (j < text.length && text.charAt(j).match(/\w/)) {
+			++j
+		}	
+	
+		// console.log('i: ' + i, 'j: ' + j)
+		// Now i, j are bounds, change to mid-bounds
+		++i
+		--j
+	
+		// Shuffle mid-section of word
+		if (i < j) {
+			const midArr = text.substring(i, j).split("")
+			const newMid = shuffle(midArr).join("")
+
+			text = text.slice(0, i) + newMid + text.slice(j)
+		}
+
+		i = j
+	}
+
+	return text
+}

@@ -1,10 +1,10 @@
 /**
- * 
- * @param {string} text 
+ * Parses a string of HTML code
+ * @param {string} text - a string of HTML code
  * @returns {string[]}
  */
 function separateInnerHTML(text) {
-	const text_parts = []
+	const textParts = []
 	let i = 0
 
 	while (i < text.length) {
@@ -15,7 +15,7 @@ function separateInnerHTML(text) {
 		}
 
 		// Text not encapsulated in an inner tag
-		text_parts.push({ value: text.substring(old_i, i), fixed: false })
+		textParts.push({ value: text.substring(old_i, i), fixed: false })
 
 		let j = i + 1
 
@@ -25,21 +25,49 @@ function separateInnerHTML(text) {
 
 		// Check if self closing tag or not
 		if (text.charAt(j - 1) === '/') {
-			text_parts.push({ value: text.substring(i, j + 1), fixed: true, enclosed: false })
+			textParts.push({ value: text.substring(i, j + 1), fixed: true, enclosed: true })
 		} else {
 			const tagName = text.substring(i, j + 1).replace(/<\s*([A-Za-z])+\s*.+/, '$1')
 			const isEnd = text.charAt(i + 1) === '/'
-			text_parts.push({ value: text.substring(i, j + 1), fixed: true, enclosed: true, start: !isEnd })
+			textParts.push({ value: text.substring(i, j + 1), fixed: true, enclosed: false, start: !isEnd })
 		}
 
 		i = j + 1
 	}
 
-	if (text_parts[text_parts.length - 1] === '') {
-		text_parts.pop()
+	if (textParts[textParts.length - 1]['value'] === '') {
+		textParts.pop()
 	}
 
-	return text_parts
+	return textParts
+}
+
+/**
+ * Returns indices of the array that can be modified
+ * @param {string[]} textArr - array of strings of HTML code
+ * @returns {int[]}
+ */
+function getEditableHTML(textArr) {
+	const editableIndices = []
+	let openTags = 0
+
+	for (let i = 0; i < textArr.length; ++i) {
+		if (!textArr[i]['fixed']) {
+			if (openTags === 0) {
+				editableIndices.push(i)
+			}
+		} else {
+			if (!textArr[i]['enclosed']) {
+				if (textArr[i]['start']) {
+					++openTags
+				} else {
+					--openTags
+				}
+			}
+		}
+	}
+
+	return editableIndices
 }
 
 /**
@@ -96,13 +124,14 @@ function shuffleAllWords(text) {
 }
 
 // The main body of the extension
-Array.prototype.forEach.call(
-	document.querySelectorAll('p,h1,h2,h3,h4,h5,h6,a,label,span,div'), element => {
-		if (element.childElementCount == 0) {
-			element.innerHTML = shuffleAllWords(element.innerHTML)
-		}
-	}
-)
+// Array.prototype.forEach.call(
+// 	document.querySelectorAll('p,h1,h2,h3,h4,h5,h6,a,label,span,div'), element => {
+// 		if (element.childElementCount == 0) {
+// 			element.innerHTML = shuffleAllWords(element.innerHTML)
+// 		}
+// 	}
+// )
 
-// const text = "Hello <span> My </span> my name is <em> Koustav </em> <input /> Samaddar"
-// console.log(separateInnerHTML(text))
+const text = "Hello <span> My </span> my name is <em> Koustav </em> Raj <input /> Samaddar"
+console.log(separateInnerHTML(text))
+console.log(getEditableHTML(separateInnerHTML(text)))

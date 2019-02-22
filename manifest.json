@@ -7,8 +7,8 @@
   "description": "Shuffles the mid-section of all words on a page.",
 
   "icons": {
-    "48": "icons/shuffler.svg",
-    "96": "icons/shuffler.svg"
+    "48": "icons/shuffler-48.png",
+    "96": "icons/shuffler-96.png"
   },
 
   "content_scripts": [
